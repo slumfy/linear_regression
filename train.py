@@ -2,15 +2,20 @@
 import sys
 import matplotlib.pyplot as plt
 
+def Save_tetha(Tetha0,Tetha1):
+	try:
+		Tfile = open("tetha.csv", 'w+')
+	except:
+		sys.exit("cannot open tetha.csv")
+	try:
+		Tfile.write(str(Tetha0) + ',' + str(Tetha1))
+	except:
+		sys.exit("Cannot write tetha.csv")
+	Tfile.close()
+
+
 def predict_price(kilom, Tetha0, Tetha1):
 	return (Tetha0 + (Tetha1 * kilom))
-
-def mean(list):
-	sum = 0
-	l = len(list)
-	for x in range(l):
-		sum += list[x]
-	return(sum / l)
 
 def normeData(Klm, Price):
 	Nklm = []
@@ -56,13 +61,14 @@ for i in content:
 	Price.append(float(Split[1]))
 
 Nklm, Nprice = normeData(Klm,Price)
-print Nklm
-print Nprice
 Tetha0 = 0.0
 Tetha1 = 0.0
 length = len(Nklm)
 learnRate = 0.1
-itteration = int(sys.argv[2])
+try:
+	itteration = int(sys.argv[2])
+except:
+	sys.exit("Bad itteration number")
 for n in range(itteration):
 	tmpt0 = 0
 	tmpt1 = 0
@@ -71,19 +77,13 @@ for n in range(itteration):
 		tmpt1 += ((predict_price(Nklm[i], Tetha0, Tetha1) - Nprice[i]) * Nklm[i])
 	Tetha0 -= tmpt0 * learnRate / length 
 	Tetha1 -= tmpt1 * learnRate / length
-print "oldt0 " + str(Tetha0)
-print "oldt1 " + str(Tetha1)
 
 Tetha0 , Tetha1 = denorme(Tetha0, Tetha1, Klm, Price)
-print "t0 " + str(Tetha0)
-print "t1 " + str(Tetha1)
-
-
+Save_tetha(Tetha0,Tetha1)
+print "t0 = " + str(Tetha0) + " t1 = " + str(Tetha1)
 Prediction = []
 for x in Klm:
 	Prediction.append(predict_price(x,Tetha0, Tetha1))
-print Klm
-print Prediction
 plt.plot(Price, Klm ,'o', Prediction, Klm)
 plt.ylabel("Kilometrage")
 plt.xlabel("Prix")
