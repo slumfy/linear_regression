@@ -20,6 +20,6 @@ except:
 	sys.exit("Not a valid Price")
 prediction = predict_price(value,T0,T1)
 if prediction > 0:
-	print "The price of your car will by around: " + str(prediction)
+	print("The price of your car will by around: " + str(prediction))
 else:
-	print "Your car have not value"
+	print("Your car have no value")

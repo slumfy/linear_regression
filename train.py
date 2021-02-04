@@ -22,13 +22,18 @@ def normeData(Klm, Price):
 	Nprice = []
 	Min = min(Klm)
 	Max = max(Klm)
-	for n in Klm:
-		Nklm.append((n - Min)/(Max - Min))
-	Min = min(Price)
-	Max = max(Price)
-	for n in Price:
-		Nprice.append((n - Min)/(Max - Min))
+	if Min != Max:
+		for n in Klm:
+			Nklm.append((n - Min)/(Max - Min))
+		Min = min(Price)
+		Max = max(Price)
+		for n in Price:
+			Nprice.append((n - Min)/(Max - Min))
+	else:
+		Nklm.append(0)
+		Nprice.append(0)
 	return (Nklm,Nprice)
+
 
 def denorme(Tetha0, Tetha1,Klm, Price):
 	T0 = 0.0
@@ -37,8 +42,12 @@ def denorme(Tetha0, Tetha1,Klm, Price):
 	m0 = min(Price)
 	M1 = max(Klm)
 	m1 = min(Klm)
-	T0 = (M0 -m0) * (Tetha0 - ((Tetha1 * m1) / (M1 - m1))) + m0
-	T1 = Tetha1 * ((M0 - m0) / (M1 - m1))
+	if (M0 != m0) or (M1 != m1):
+		T0 = (M0 -m0) * (Tetha0 - ((Tetha1 * m1) / (M1 - m1))) + m0
+		T1 = Tetha1 * ((M0 - m0) / (M1 - m1))
+	else:
+		T0 = 0
+		T1 = 0
 	return(T0, T1)
 
 
@@ -56,7 +65,8 @@ for i in content:
 	Split = i.split(',')
 	if len(Split) != 2:
 		sys.exit("Bad scv format")
-	Split[1] = Split[1][:-1]
+	if Split[1].find("\n") != -1:
+		Split[1] = Split[1][:-1]
 	Klm.append(float(Split[0]))
 	Price.append(float(Split[1]))
 
@@ -80,7 +90,7 @@ for n in range(itteration):
 
 Tetha0 , Tetha1 = denorme(Tetha0, Tetha1, Klm, Price)
 Save_tetha(Tetha0,Tetha1)
-print "t0 = " + str(Tetha0) + " t1 = " + str(Tetha1)
+print("t0 = " + str(Tetha0) + " t1 = " + str(Tetha1))
 Prediction = []
 for x in Klm:
 	Prediction.append(predict_price(x,Tetha0, Tetha1))
